@@ -12,7 +12,7 @@ pipeline {
                 sh """
                     java -version
                     mvn -version
-                    git --verion
+                    git --version
                 """
             }
         }

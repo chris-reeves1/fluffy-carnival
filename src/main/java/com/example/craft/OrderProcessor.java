@@ -2,6 +2,8 @@ package com.example.craft;
 
 import java.util.List;
 
+import com.example.craft.discount.DiscountStrategy;
+import com.example.craft.discount.DiscountStrategyFactory;
 import com.example.craft.domain.Customer;
 import com.example.craft.domain.CustomerType;
 import com.example.craft.domain.Order;
@@ -9,11 +11,13 @@ import com.example.craft.domain.OrderItem;
 
 public class OrderProcessor {
 
+    private final DiscountStrategyFactory discountStrategyFactory = new DiscountStrategyFactory();
+
     public String process(Order order) {
         validateOrder(order);
 
         int subtotal = calculateSubtotal(order);
-        int discount = calculateDiscount(order.getCustomer(), order.getItems(), subtotal);
+        int discount = calculateDiscount(order.getCustomer(), order, subtotal);
         int deliveryFee = calculateDeliveryFee(order, subtotal);
 
         int total = subtotal - discount + deliveryFee;
@@ -77,50 +81,56 @@ public class OrderProcessor {
                 
     } return subtotal;}
 
-    private int calculateDiscount(Customer customer, List<OrderItem> items, int subtotal) {
-    int discount = 0;
-    int itemCount = 0;
-    for (OrderItem item : items) {
-        itemCount += item.getQuantity();
-    }
 
-    if (customer.getType() == CustomerType.STUDENT) {
-        discount = (int) (subtotal * 0.15);
-
-        if (subtotal > 10000) {
-            discount += 250;
+        private int calculateDiscount(Customer customer, Order order, int subtotal) {
+            DiscountStrategy strategy = discountStrategyFactory.getStrategy(customer.getType());
+            return strategy.calculateDiscount(order, subtotal);
         }
 
-        System.out.println("Student discount applied");
+//     private int calculateDiscount(Customer customer, List<OrderItem> items, int subtotal) {
+//     int discount = 0;
+//     int itemCount = 0;
+//     for (OrderItem item : items) {
+//         itemCount += item.getQuantity();
+//     }
 
-    } else if (customer.getType() == CustomerType.PREMIUM) {
-        discount = (int) (subtotal * 0.10);
+//     if (customer.getType() == CustomerType.STUDENT) {
+//         discount = (int) (subtotal * 0.15);
 
-        if (itemCount > 5) {
-            discount += 300;
-        }
+//         if (subtotal > 10000) {
+//             discount += 250;
+//         }
 
-        System.out.println("Premium discount applied");
+//         System.out.println("Student discount applied");
 
-    } else if (customer.getType() == CustomerType.STAFF) {
-        discount = (int) (subtotal * 0.20);
+//     } else if (customer.getType() == CustomerType.PREMIUM) {
+//         discount = (int) (subtotal * 0.10);
 
-        if (subtotal > 20000) {
-            discount += 500;
-        }
+//         if (itemCount > 5) {
+//             discount += 300;
+//         }
 
-        System.out.println("Staff discount applied");
+//         System.out.println("Premium discount applied");
 
-    } else {
-        System.out.println("No discount applied");
-    }
+//     } else if (customer.getType() == CustomerType.STAFF) {
+//         discount = (int) (subtotal * 0.20);
 
-    if (discount > subtotal) {
-        discount = subtotal;
-    }
+//         if (subtotal > 20000) {
+//             discount += 500;
+//         }
 
-    return discount;
-}
+//         System.out.println("Staff discount applied");
+
+//     } else {
+//         System.out.println("No discount applied");
+//     }
+
+//     if (discount > subtotal) {
+//         discount = subtotal;
+//     }
+
+//     return discount;
+// }
 
 private int calculateDeliveryFee(Order order, int subtotal) {
     String type = order.getDeliveryType();

@@ -114,3 +114,24 @@ TODO:
 8) modularity sweep.
 
 Final Test: can we add new users types/rules easily. 
+
+
+Pair programming:
+
+driver - writes the code/implements the ideas. 
+navigator - Thinks ahead, spot mistakes, check design, look up errors, decisions. 
+
+
+Better:
+    - better code - mistakes should be spotted quickly. 
+    - Shared best practices/design decisiions/ thought process.
+    - reviewing test results. 
+
+avoided because: 
+    - time and costs
+    - team friction.
+    - Remotely.
+
+
+ 
+

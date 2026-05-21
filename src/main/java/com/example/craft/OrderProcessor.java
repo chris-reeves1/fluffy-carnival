@@ -1,5 +1,7 @@
 package com.example.craft;
 
+import java.util.List;
+
 import com.example.craft.domain.Customer;
 import com.example.craft.domain.CustomerType;
 import com.example.craft.domain.Order;
@@ -75,43 +77,142 @@ public class OrderProcessor {
                 
     } return subtotal;}
 
-    private int calculateDiscount(){
-        int discount = 0;
-        itemCount = itemCount + item.getQuantity();
-
-        if (customer.getType() == CustomerType.STUDENT) {
-            discount = (int) (subtotal * 0.15);
-
-            if (subtotal > 10000) {
-                discount = discount + 250;
-            }
-
-            System.out.println("Student discount applied");
-        } else if (customer.getType() == CustomerType.PREMIUM) {
-            discount = (int) (subtotal * 0.10);
-
-            if (itemCount > 5) {
-                discount = discount + 300;
-            }
-
-            System.out.println("Premium discount applied");
-        } else if (customer.getType() == CustomerType.STAFF) {
-            discount = (int) (subtotal * 0.20);
-
-            if (subtotal > 20000) {
-                discount = discount + 500;
-            }
-
-            System.out.println("Staff discount applied");
-        } else {
-            discount = 0;
-            System.out.println("No discount applied");
-        }
-
-        if (discount > subtotal) {
-            discount = subtotal;
-        }
+    private int calculateDiscount(Customer customer, List<OrderItem> items, int subtotal) {
+    int discount = 0;
+    int itemCount = 0;
+    for (OrderItem item : items) {
+        itemCount += item.getQuantity();
     }
+
+    if (customer.getType() == CustomerType.STUDENT) {
+        discount = (int) (subtotal * 0.15);
+
+        if (subtotal > 10000) {
+            discount += 250;
+        }
+
+        System.out.println("Student discount applied");
+
+    } else if (customer.getType() == CustomerType.PREMIUM) {
+        discount = (int) (subtotal * 0.10);
+
+        if (itemCount > 5) {
+            discount += 300;
+        }
+
+        System.out.println("Premium discount applied");
+
+    } else if (customer.getType() == CustomerType.STAFF) {
+        discount = (int) (subtotal * 0.20);
+
+        if (subtotal > 20000) {
+            discount += 500;
+        }
+
+        System.out.println("Staff discount applied");
+
+    } else {
+        System.out.println("No discount applied");
+    }
+
+    if (discount > subtotal) {
+        discount = subtotal;
+    }
+
+    return discount;
+}
+
+private int calculateDeliveryFee(Order order, int subtotal) {
+    String type = order.getDeliveryType();
+    Customer customer = order.getCustomer();
+
+    if (type.equalsIgnoreCase("STANDARD")) {
+        System.out.println("Standard delivery selected");
+        return subtotal > 5000 ? 0 : 399;
+
+    } else if (type.equalsIgnoreCase("NEXT_DAY")) {
+        System.out.println("Next day delivery selected");
+        return subtotal > 15000 ? 499 : 799;
+
+    } else if (type.equalsIgnoreCase("COLLECTION")) {
+        System.out.println("Collection selected");
+
+        if (customer.getPhoneNumber() == null) {
+            System.out.println("Collection selected but no phone number was provided");
+        }
+
+        return 0;
+
+    } else {
+        throw new IllegalArgumentException("Unknown delivery type: " + type);
+    }
+}
+
+private void processPayment(Order order, int total) {
+    Customer customer = order.getCustomer();
+    String paymentType = order.getPaymentType();
+
+    if (paymentType.equalsIgnoreCase("CARD")) {
+        System.out.println("Taking card payment for £" + formatPounds(total));
+
+        if (total > 100000) {
+            System.out.println("Large card payment requires manual review");
+        }
+
+    } else if (paymentType.equalsIgnoreCase("PAYPAL")) {
+        System.out.println("Taking PayPal payment for £" + formatPounds(total));
+
+        if (customer.getEmail().endsWith("@example.com")) {
+            System.out.println("PayPal payment using test-like email address");
+        }
+
+    } else if (paymentType.equalsIgnoreCase("BANK_TRANSFER")) {
+        System.out.println("Creating bank transfer request for £" + formatPounds(total));
+
+        if (total < 1000) {
+            System.out.println("Bank transfer for low value order may not be worth processing");
+        }
+
+    } else {
+        throw new IllegalArgumentException("Unknown payment type: " + paymentType);
+    }
+}
+
+private void sendNotifications(Order order, int total) {
+    Customer customer = order.getCustomer();
+
+    System.out.println("Saving order " + order.getOrderId());
+    System.out.println("Saving order " + order.getOrderId() + " for customer " + customer.getName());
+
+    System.out.println("Sending email to " + customer.getEmail());
+    System.out.println("Dear " + customer.getName() + ", your order has been processed.");
+    System.out.println("Order " + order.getOrderId() + " total was £" + formatPounds(total));
+
+    if (customer.getPhoneNumber() != null && customer.getPhoneNumber().startsWith("07")) {
+        System.out.println("Sending SMS to " + customer.getPhoneNumber());
+        System.out.println("Order " + order.getOrderId() + " confirmed by SMS");
+    }
+
+    if (customer.getType() == CustomerType.PREMIUM && total > 5000) {
+        System.out.println("Sending premium customer follow-up email");
+    }
+}
+private String generateReceipt(Order order, int subtotal, int discount, int deliveryFee, int total) {
+    String receipt = "Receipt\n"
+            + "-------\n"
+            + "Order: " + order.getOrderId() + "\n"
+            + "Customer: " + order.getCustomer().getName() + "\n"
+            + "Subtotal: £" + formatPounds(subtotal) + "\n"
+            + "Discount: £" + formatPounds(discount) + "\n"
+            + "Delivery: £" + formatPounds(deliveryFee) + "\n"
+            + "Total: £" + formatPounds(total) + "\n";
+
+    System.out.println(receipt);
+    return receipt;
+}
+private String formatPounds(int pence) {
+    return String.format("%.2f", pence / 100.0);
+}
 }
         // if (order == null) {
         //     throw new IllegalArgumentException("Order must not be null");
@@ -194,98 +295,98 @@ public class OrderProcessor {
         //     discount = subtotal;
         // }
 
-        int deliveryFee = 0;
+    //     int deliveryFee = 0;
 
-        if (order.getDeliveryType().equalsIgnoreCase("STANDARD")) {
-            deliveryFee = 399;
+    //     if (order.getDeliveryType().equalsIgnoreCase("STANDARD")) {
+    //         deliveryFee = 399;
 
-            if (subtotal > 5000) {
-                deliveryFee = 0;
-            }
+    //         if (subtotal > 5000) {
+    //             deliveryFee = 0;
+    //         }
 
-            System.out.println("Standard delivery selected");
-        } else if (order.getDeliveryType().equalsIgnoreCase("NEXT_DAY")) {
-            deliveryFee = 799;
+    //         System.out.println("Standard delivery selected");
+    //     } else if (order.getDeliveryType().equalsIgnoreCase("NEXT_DAY")) {
+    //         deliveryFee = 799;
 
-            if (subtotal > 15000) {
-                deliveryFee = 499;
-            }
+    //         if (subtotal > 15000) {
+    //             deliveryFee = 499;
+    //         }
 
-            System.out.println("Next day delivery selected");
-        } else if (order.getDeliveryType().equalsIgnoreCase("COLLECTION")) {
-            deliveryFee = 0;
+    //         System.out.println("Next day delivery selected");
+    //     } else if (order.getDeliveryType().equalsIgnoreCase("COLLECTION")) {
+    //         deliveryFee = 0;
 
-            if (customer.getPhoneNumber() == null) {
-                System.out.println("Collection selected but no phone number was provided");
-            }
+    //         if (customer.getPhoneNumber() == null) {
+    //             System.out.println("Collection selected but no phone number was provided");
+    //         }
 
-            System.out.println("Collection selected");
-        } else {
-            throw new IllegalArgumentException("Unknown delivery type: " + order.getDeliveryType());
-        }
+    //         System.out.println("Collection selected");
+    //     } else {
+    //         throw new IllegalArgumentException("Unknown delivery type: " + order.getDeliveryType());
+    //     }
 
-        int total = subtotal - discount + deliveryFee;
+    //     int total = subtotal - discount + deliveryFee;
 
-        if (total <= 0) {
-            throw new IllegalStateException("Order total must be positive");
-        }
+    //     if (total <= 0) {
+    //         throw new IllegalStateException("Order total must be positive");
+    //     }
 
-        if (order.getPaymentType().equalsIgnoreCase("CARD")) {
-            System.out.println("Taking card payment for £" + formatPounds(total));
+    //     if (order.getPaymentType().equalsIgnoreCase("CARD")) {
+    //         System.out.println("Taking card payment for £" + formatPounds(total));
 
-            if (total > 100000) {
-                System.out.println("Large card payment requires manual review");
-            }
-        } else if (order.getPaymentType().equalsIgnoreCase("PAYPAL")) {
-            System.out.println("Taking PayPal payment for £" + formatPounds(total));
+    //         if (total > 100000) {
+    //             System.out.println("Large card payment requires manual review");
+    //         }
+    //     } else if (order.getPaymentType().equalsIgnoreCase("PAYPAL")) {
+    //         System.out.println("Taking PayPal payment for £" + formatPounds(total));
 
-            if (customer.getEmail().endsWith("@example.com")) {
-                System.out.println("PayPal payment using test-like email address");
-            }
-        } else if (order.getPaymentType().equalsIgnoreCase("BANK_TRANSFER")) {
-            System.out.println("Creating bank transfer request for £" + formatPounds(total));
+    //         if (customer.getEmail().endsWith("@example.com")) {
+    //             System.out.println("PayPal payment using test-like email address");
+    //         }
+    //     } else if (order.getPaymentType().equalsIgnoreCase("BANK_TRANSFER")) {
+    //         System.out.println("Creating bank transfer request for £" + formatPounds(total));
 
-            if (total < 1000) {
-                System.out.println("Bank transfer for low value order may not be worth processing");
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown payment type: " + order.getPaymentType());
-        }
+    //         if (total < 1000) {
+    //             System.out.println("Bank transfer for low value order may not be worth processing");
+    //         }
+    //     } else {
+    //         throw new IllegalArgumentException("Unknown payment type: " + order.getPaymentType());
+    //     }
 
-        System.out.println("Saving order " + order.getOrderId());
-        System.out.println("Saving order " + order.getOrderId() + " for customer " + customer.getName());
+    //     System.out.println("Saving order " + order.getOrderId());
+    //     System.out.println("Saving order " + order.getOrderId() + " for customer " + customer.getName());
 
-        System.out.println("Sending email to " + customer.getEmail());
-        System.out.println("Dear " + customer.getName() + ", your order has been processed.");
-        System.out.println("Order " + order.getOrderId() + " total was £" + formatPounds(total));
+    //     System.out.println("Sending email to " + customer.getEmail());
+    //     System.out.println("Dear " + customer.getName() + ", your order has been processed.");
+    //     System.out.println("Order " + order.getOrderId() + " total was £" + formatPounds(total));
 
-        if (customer.getPhoneNumber() != null && customer.getPhoneNumber().startsWith("07")) {
-            System.out.println("Sending SMS to " + customer.getPhoneNumber());
-            System.out.println("Order " + order.getOrderId() + " confirmed by SMS");
-        }
+    //     if (customer.getPhoneNumber() != null && customer.getPhoneNumber().startsWith("07")) {
+    //         System.out.println("Sending SMS to " + customer.getPhoneNumber());
+    //         System.out.println("Order " + order.getOrderId() + " confirmed by SMS");
+    //     }
 
-        if (customer.getType() == CustomerType.PREMIUM && total > 5000) {
-            System.out.println("Sending premium customer follow-up email");
-        }
+    //     if (customer.getType() == CustomerType.PREMIUM && total > 5000) {
+    //         System.out.println("Sending premium customer follow-up email");
+    //     }
 
-        String receipt = "Receipt\n"
-                + "-------\n"
-                + "Order: " + order.getOrderId() + "\n"
-                + "Customer: " + customer.getName() + "\n"
-                + "Subtotal: £" + formatPounds(subtotal) + "\n"
-                + "Discount: £" + formatPounds(discount) + "\n"
-                + "Delivery: £" + formatPounds(deliveryFee) + "\n"
-                + "Total: £" + formatPounds(total) + "\n";
+    //     String receipt = "Receipt\n"
+    //             + "-------\n"
+    //             + "Order: " + order.getOrderId() + "\n"
+    //             + "Customer: " + customer.getName() + "\n"
+    //             + "Subtotal: £" + formatPounds(subtotal) + "\n"
+    //             + "Discount: £" + formatPounds(discount) + "\n"
+    //             + "Delivery: £" + formatPounds(deliveryFee) + "\n"
+    //             + "Total: £" + formatPounds(total) + "\n";
 
-        System.out.println(receipt);
-        return receipt;
-    }
+    //     System.out.println(receipt);
+    //     return receipt;
+    // }
 
-    private String formatPounds(int pence) {
-        return String.format("%.2f", pence / 100.0);
-    }
+    // private String formatPounds(int pence) {
+    //     return String.format("%.2f", pence / 100.0);
+    // }
 
-    private boolean isLargeOrder(int total) {
-        return total > 50000;
-    }
-}
+    // private boolean isLargeOrder(int total) {
+    //     return total > 50000;
+    // }
+

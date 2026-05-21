@@ -95,3 +95,22 @@ TODO:
 
 - Short pair programming for 1-2 issues
 - individual work through issues + group pattern work. 
+
+
+
+
+
+    ISSUE           WHY                 FIX                 
+1)  god class       hard to             Extract to a, b,    
+                    maintain.           c etc.
+2)  Discount rules  adding is risky     discoutnstrat.      
+    too long                            implemted by 
+                                        studentstrat...
+3) Null validation.
+4) magic numbers
+5) Same for delivery + payments - factory pattern. 
+6) prints everywhere. - adapter pattern.
+7) facade - order flow. 
+8) modularity sweep.
+
+Final Test: can we add new users types/rules easily. 

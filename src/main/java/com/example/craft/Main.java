@@ -11,8 +11,7 @@ public class Main {
                 "Ada Lovelace",
                 "ada@example.com",
                 "07123456789",
-                CustomerType.STUDENT
-        );
+                CustomerType.STUDENT);
 
         Order order = new Order("ORD-1001", customer, "NEXT_DAY", "CARD");
         order.addItem(new OrderItem("Keyboard", 1, 4999));

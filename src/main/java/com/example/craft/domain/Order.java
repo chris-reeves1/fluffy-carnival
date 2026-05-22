@@ -18,11 +18,25 @@ public class Order {
         this.paymentType = paymentType;
     }
 
-    public String getOrderId() { return orderId; }
-    public Customer getCustomer() { return customer; }
-    public List<OrderItem> getItems() { return Collections.unmodifiableList(items); }
-    public String getDeliveryType() { return deliveryType; }
-    public String getPaymentType() { return paymentType; }
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public List<OrderItem> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
+    public String getDeliveryType() {
+        return deliveryType;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
 
     public void addItem(OrderItem item) {
         items.add(item);

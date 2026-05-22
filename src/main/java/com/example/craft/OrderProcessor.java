@@ -22,7 +22,6 @@ import com.example.craft.validation.OrderValidator;
 
 import com.example.craft.receipt.ReceiptGenerator;
 
-
 public class OrderProcessor {
 
     private final DiscountStrategyFactory discountStrategyFactory = new DiscountStrategyFactory();
@@ -32,7 +31,6 @@ public class OrderProcessor {
     private final PaymentProcessorFactory paymentProcessorFactory = new PaymentProcessorFactory();
     private final OrderValidator orderValidator = new OrderValidator();
     private final ReceiptGenerator receiptGenerator = new ReceiptGenerator();
-
 
     public String process(Order order) {
         orderValidator.validate(order);

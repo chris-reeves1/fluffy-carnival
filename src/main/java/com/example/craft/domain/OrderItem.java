@@ -11,7 +11,15 @@ public class OrderItem {
         this.unitPricePence = unitPricePence;
     }
 
-    public String getName() { return name; }
-    public int getQuantity() { return quantity; }
-    public int getUnitPricePence() { return unitPricePence; }
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public int getUnitPricePence() {
+        return unitPricePence;
+    }
 }

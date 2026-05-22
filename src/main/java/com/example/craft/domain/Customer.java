@@ -13,8 +13,19 @@ public class Customer {
         this.type = type;
     }
 
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public CustomerType getType() { return type; }
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public CustomerType getType() {
+        return type;
+    }
 }

@@ -9,7 +9,7 @@ public class DiscountStrategyFactory {
             return new StudentDiscountStrategy();
         }
         if (customerType == CustomerType.PREMIUM) {
-            return new PremiumDiscountStrategy();          
+            return new PremiumDiscountStrategy();
         }
         if (customerType == CustomerType.STAFF) {
             return new StaffDiscountStrategy();
@@ -17,7 +17,3 @@ public class DiscountStrategyFactory {
         return new NoDiscountStrategy();
     }
 }
-
-
-
-

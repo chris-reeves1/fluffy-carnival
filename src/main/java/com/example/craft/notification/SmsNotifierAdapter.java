@@ -22,7 +22,6 @@ public class SmsNotifierAdapter implements Notifier {
                 customer.getPhoneNumber(),
                 message,
                 false,
-                ACCOUNT_CODE
-        );
+                ACCOUNT_CODE);
     }
 }

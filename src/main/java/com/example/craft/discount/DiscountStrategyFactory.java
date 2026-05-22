@@ -14,6 +14,9 @@ public class DiscountStrategyFactory {
         if (customerType == CustomerType.STAFF) {
             return new StaffDiscountStrategy();
         }
+        if (customerType == CustomerType.LOYALTY) {
+            return new LoyaltyDiscountStrategy();
+        }
         return new NoDiscountStrategy();
     }
 }

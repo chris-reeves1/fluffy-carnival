@@ -144,4 +144,24 @@ class OrderProcessorTest {
         assertTrue(receipt.contains("Delivery: £0.00"));
         assertTrue(receipt.contains("Total: £51.00"));
     }
+
+    @Test
+void invalidPaymentTypeThrowsException() {
+    Customer customer = new Customer(
+            "Pat",
+            "pat@test.com",
+            "07123456789",
+            CustomerType.STANDARD
+    );
+
+    Order order = new Order("ORD-009", customer, "STANDARD", "CRYPTO");
+    order.addItem(new OrderItem("Mouse", 1, 2500));
+
+    IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> processor.process(order)
+    );
+
+    assertTrue(exception.getMessage().contains("Unknown payment type"));
+}
 }

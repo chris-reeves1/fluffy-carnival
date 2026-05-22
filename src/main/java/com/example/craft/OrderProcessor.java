@@ -15,6 +15,9 @@ import com.example.craft.notification.SmsNotifierAdapter;
 import com.example.craft.delivery.DeliveryStrategy;
 import com.example.craft.delivery.DeliveryStrategyFactory;
 
+import com.example.craft.payment.PaymentProcessor;
+import com.example.craft.payment.PaymentProcessorFactory;
+
 
 public class OrderProcessor {
 
@@ -22,6 +25,7 @@ public class OrderProcessor {
     private final Notifier emailNotifier = new ConsoleNotifier();
     private final Notifier smsNotifier = new SmsNotifierAdapter(new LegacySmsClient());
     private final DeliveryStrategyFactory deliveryStrategyFactory = new DeliveryStrategyFactory();
+    private final PaymentProcessorFactory paymentProcessorFactory = new PaymentProcessorFactory();
 
 
     public String process(Order order) {
@@ -105,61 +109,40 @@ public class OrderProcessor {
         return strategy.calculateDeliveryFee(order, subtotal);
     }
 
-    // private int calculateDeliveryFee(Order order, int subtotal) {
-    //     String type = order.getDeliveryType();
+    private void processPayment(Order order, int total) {
+        PaymentProcessor processor = paymentProcessorFactory.getProcessor(order.getPaymentType());
+        processor.processPayment(order, total);
+    }
+
+    // private void processPayment(Order order, int total) {
     //     Customer customer = order.getCustomer();
+    //     String paymentType = order.getPaymentType();
 
-    //     if (type.equalsIgnoreCase("STANDARD")) {
-    //         System.out.println("Standard delivery selected");
-    //         return subtotal > 5000 ? 0 : 399;
+    //     if (paymentType.equalsIgnoreCase("CARD")) {
+    //         System.out.println("Taking card payment for £" + formatPounds(total));
 
-    //     } else if (type.equalsIgnoreCase("NEXT_DAY")) {
-    //         System.out.println("Next day delivery selected");
-    //         return subtotal > 15000 ? 499 : 799;
-
-    //     } else if (type.equalsIgnoreCase("COLLECTION")) {
-    //         System.out.println("Collection selected");
-
-    //         if (customer.getPhoneNumber() == null) {
-    //             System.out.println("Collection selected but no phone number was provided");
+    //         if (total > 100000) {
+    //             System.out.println("Large card payment requires manual review");
     //         }
 
-    //         return 0;
+    //     } else if (paymentType.equalsIgnoreCase("PAYPAL")) {
+    //         System.out.println("Taking PayPal payment for £" + formatPounds(total));
+
+    //         if (customer.getEmail().endsWith("@example.com")) {
+    //             System.out.println("PayPal payment using test-like email address");
+    //         }
+
+    //     } else if (paymentType.equalsIgnoreCase("BANK_TRANSFER")) {
+    //         System.out.println("Creating bank transfer request for £" + formatPounds(total));
+
+    //         if (total < 1000) {
+    //             System.out.println("Bank transfer for low value order may not be worth processing");
+    //         }
 
     //     } else {
-    //         throw new IllegalArgumentException("Unknown delivery type: " + type);
+    //         throw new IllegalArgumentException("Unknown payment type: " + paymentType);
     //     }
     // }
-
-    private void processPayment(Order order, int total) {
-        Customer customer = order.getCustomer();
-        String paymentType = order.getPaymentType();
-
-        if (paymentType.equalsIgnoreCase("CARD")) {
-            System.out.println("Taking card payment for £" + formatPounds(total));
-
-            if (total > 100000) {
-                System.out.println("Large card payment requires manual review");
-            }
-
-        } else if (paymentType.equalsIgnoreCase("PAYPAL")) {
-            System.out.println("Taking PayPal payment for £" + formatPounds(total));
-
-            if (customer.getEmail().endsWith("@example.com")) {
-                System.out.println("PayPal payment using test-like email address");
-            }
-
-        } else if (paymentType.equalsIgnoreCase("BANK_TRANSFER")) {
-            System.out.println("Creating bank transfer request for £" + formatPounds(total));
-
-            if (total < 1000) {
-                System.out.println("Bank transfer for low value order may not be worth processing");
-            }
-
-        } else {
-            throw new IllegalArgumentException("Unknown payment type: " + paymentType);
-        }
-    }
 
     private void sendNotifications(Order order, int total) {
         Customer customer = order.getCustomer();

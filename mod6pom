@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>demo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>demo</name>
+    <description>Basic Spring Boot API demo project</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jacoco.version>0.8.11</jacoco.version>
+        <sonar.maven.version>3.11.0.3922</sonar.maven.version>
+
+        <sonar.projectKey>demo</sonar.projectKey>
+        <sonar.projectName>demo</sonar.projectName>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot REST API support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Test support: JUnit 5, Mockito, AssertJ, Spring Boot testing, MockMvc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Java 21 compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+
+            <!-- Spring Boot run/package support -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Optional: allows mvn exec:java -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <mainClass>com.example.demo.DemoApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- JUnit 5 test runner -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+
+            <!-- JaCoCo coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Checkstyle: style/linting discussion, does not fail build -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <configLocation>google_checks.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>false</failsOnError>
+                </configuration>
+            </plugin>
+
+            <!-- PMD: design, best practices, error-prone code -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.22.0</version>
+                <configuration>
+                    <targetJdk>21</targetJdk>
+                    <printFailingErrors>true</printFailingErrors>
+                    <failOnViolation>false</failOnViolation>
+                    <rulesets>
+                        <ruleset>/category/java/bestpractices.xml</ruleset>
+                        <ruleset>/category/java/design.xml</ruleset>
+                        <ruleset>/category/java/errorprone.xml</ruleset>
+                    </rulesets>
+                </configuration>
+            </plugin>
+
+            <!-- SpotBugs: likely bugs and risky patterns -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.3.1</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <xmlOutput>true</xmlOutput>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+
+            <!-- SonarQube scanner -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.maven.version}</version>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
